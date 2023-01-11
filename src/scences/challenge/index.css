@@ -1,0 +1,48 @@
+.sub-one {
+    margin-left : 10%;
+    width : 280px;
+  }
+
+.sub-two {
+    position: absolute;
+    color: rgb(38, 96, 255);
+    margin-left: 32%;
+    margin-top: -11%;
+    font-size: 2.5rem;
+}
+.sub-three {
+    position: absolute;
+    margin-left: 32%;
+    margin-top: -8%;
+    font-size: 2.0rem;
+}
+.sub-four {
+    position: absolute;
+    margin-left: 32%;
+    margin-top: -4%;
+    font-size: 1.2rem;
+}
+.sub-five {
+    position: absolute;
+    color: rgb(38, 96, 255);
+    margin-left: 31%;
+    margin-top: 5%;
+    font-size: 1.5rem;
+}
+.input-value {
+    position: absolute;
+    margin-left: 26%;
+    margin-top: 8%;
+    font-size: 1.2rem;
+    width : 400px;
+    height: 50px;
+    border-color: rgb(38, 96, 255);
+    border-radius: 20px;
+}
+.input-button{
+    position: absolute;
+    margin-left: 36%;
+    margin-top: 13%;
+    width : 100px;
+    border-radius: 10px;
+}
