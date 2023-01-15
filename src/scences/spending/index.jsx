@@ -1,28 +1,125 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataInvoices } from "../../data/mockData";
+import { memo, useState, useEffect  } from "react";
+import axios from "axios";
+
 import Header from "../../components/Header";
 
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Sidebar from '../global/Sidebar';
+import Topbar from '../global/Topbar';
+import { useRef } from "preact/hooks";
+
 const Spending = () => {
+  
   let today = new Date();  
   let year = today.getFullYear(); // 년도
   let month = today.getMonth() + 1;  // 월
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const [isSidebar, setIsSidebar] = useState(true);
+
+  // const memoRef = useRef()
+  // const costRef = useRef()
+  // const whenRef = useRef()
+  // const purposeRef = useRef()
+  //지출 내역 데이터 POST
+  const [data, setData] = useState({
+      when: "",
+      memo: "",
+      purpose: "",
+      cost: "", //초기값
+  })
+
+  function submit(e){
+    axios.post('http://127.0.0.1:8000/api/v1/spending/new/',{
+      "user" : "3e6eb5ec067f4d39ad6f4165bcec8386", //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
+      //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
+      when: data.when,
+      memo: data.memo,
+      purpose: data.purpose,
+      cost: data.cost
+    })
+      .then(res => {
+        // memoRef.current.value = "";
+        // costRef.current.value = "";
+        // whenRef.current.value = "";
+        // purposeRef.current.value = "";
+        setlist(prev => prev.push(res.data))
+      }) 
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+ //fetch spending후에 set 으로 가지고올것
+
+  function handle(e){
+    const newdata = {...data}
+    newdata[e.target.id] = e.target.value
+    setData(newdata)
+    console.log(newdata)
+  }
+//msw
+// ocr 모델
+const [file, setFile] = useState(false);
+const [list,setlist] = useState([]);
+  const handleInputChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+  const upload = (e) => {
+    let formData = new FormData();
+    formData.append("files", file);
+    axios({
+      method: "post",
+      url: "http://127.0.0.1:8000/api/v1/ocr",
+      data: formData
+    }).then(({ data }) => {
+      console.log("성공! ", JSON.stringify(data));
+    });
+  };
+
+  
+
+  // const rows = [ //list
+  //   {
+  //     id: 1,
+  //     purpose: (data.purpose),
+  //     when: (data.when),
+  //     cost : (data.cost),
+  //     memo : (data.memo)
+  //   },
+  //   {
+  //     id: 1,
+  //     purpose: (data.purpose),
+  //     when: (data.when),
+  //     cost : (data.cost),
+  //     memo : (data.memo)
+  //   }
+  // ]
+
+
   const columns = [
     {
-      field: "date",
+      field: "when",
       headerName: "날짜",
       flex: 1,
     },
     {
-      field: "phone",
+      field: "purpose",
       headerName: "용도",
       flex: 1,
     },
     {
-      field: "email",
+      field: "memo",
       headerName: "메모",
       flex: 1,
     },
@@ -30,15 +127,43 @@ const Spending = () => {
       field: "cost",
       headerName: "금액",
       flex: 1,
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          ${params.row.cost}
-        </Typography>
-      ),
+    },
+    {
+      renderCell : (parms) =>(
+      <Button variant="outlined" >
+        삭제
+      </Button>
+      )
     }
-  ];
 
+    // { title: "날짜", field: "date", headerName: "날짜", flex: 1,
+    //   validate: setData => data.when === undefined || data.when === "" ? "Required" : true },
+    // {
+    //   title: "용도", field: "purpose", headerName: "용도", flex: 1,
+    //   validate: setData => data.purpose === undefined || data.purpose === "" ? "Required" : true
+    // },
+    // {
+    //   title: "메모", field: "memo", headerName: "메모", flex: 1,
+    //   validate: setData => data.memo === undefined || data.memo === "" ? "Required" : true
+    // },
+    // {
+    //   title: "금액", field: 'cost',headerName: "금액", flex: 1,
+    //   validate: setData => data.cost === undefined || data.cost === "" ? "Required" : true
+    // }
+  ];
+useEffect(() => {
+  axios.get('http://127.0.0.1:8000/api/v1/spending/spending-list/3e6eb5ec067f4d39ad6f4165bcec8386')
+  .then(res => 
+    setlist(res.data.spending_list)
+  )
+},[])
   return (
+    <div className="app">
+          <Sidebar isSidebar={isSidebar} />
+    <main className="content">
+          <Topbar setIsSidebar={setIsSidebar} />
+    </main>
+    <div className="size">
     <Box m="20px">
       <Header title="지출내역" subtitle={(year + '년 '+ month + '월')}/>
       <Box
@@ -70,10 +195,130 @@ const Spending = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataInvoices} columns={columns} />
+      
+      <style type="text/css">
+        {`
+          .modal-title, .form-label {
+            color: black;
+          }
+          .btn-primary.main{
+            width : 100px;
+           margin-top : -60px;
+           margin-left: 90%;
+           margin-bottom : 5px;
+          }
+          .btn-primary.center{
+           width : 100px;
+           margin-top : 10px;
+           margin-bottom : 10px;
+           margin-left: 70%;
+          }
+          .btn-secondary.center{
+            width : 100px;
+          }
+          .btn-primary.second{
+            margin-right:13%;
+            width : 100px;
+            border-radius:6px;
+          }
+          .m {
+            margin-left:8px;
+            font-size : 12px;
+          }
+       `}
+      </style>
+      <Button variant="primary main" onClick={handleShow}>
+            내역 추가
+      </Button>
+      
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>지출 내역 추가</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" >
+              <Form.Label>날짜</Form.Label >
+              <Form.Control
+                // ref={whenRef}
+                type="date"
+                autoFocus
+                onChange={(e) => handle(e)} id ="when" value ={data.when} method="post"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" >
+            <Form.Label>메모</Form.Label>
+              <Form.Control
+                // ref={memoRef}
+                type="text"
+                placeholder="메모 (최대 50자)"
+                autoFocus
+                onChange={(e) => handle(e)} id ="memo" value ={data.memo} method="post"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+            <Form.Label>용도</Form.Label>
+              <select class="form-select" onChange={(e) => handle(e)} id ="purpose" value ={data.purpose} method="post">
+                <option selected>용도를 선택하세요.</option>
+                <option value="식사">식사</option>
+                <option value="술/유흥">술/유흥</option>
+                <option value="뷰티/미용">뷰티/미용</option>
+                <option value="교통/차량">교통/차량</option>
+                <option value="주거/통신">주거/통신</option>
+              </select>
+            </Form.Group>
+            <Form.Group className="mb-3"  >
+            <Form.Label>금액</Form.Label>
+              <Form.Control
+                // ref={costRef}
+                type="number"
+                placeholder="금액을 입력하세요."
+                autoFocus
+                onChange={(e) => handle(e)} id ="cost" value ={data.cost} method="post"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+            <Form.Label>영수증 OCR</Form.Label>
+              <Form.Control
+                type="file"
+                autoFocus
+                accept="image/*" 
+                onChange={handleInputChange} 
+                method="post"
+              />
+               <Button variant="primary center" onClick={() => {
+                handleShow();
+                upload();
+               }}>
+                 업로드
+               </Button><br/>
+               
+               <Form.Label className="m">❗영수증 이미지를 업로드 하면, 자동으로 가계부를 작성해드립니다❗</Form.Label>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary center" onClick={handleClose}>
+            닫기
+          </Button>
+          <Button type="submit" variant="primary second" onClick={()=> {
+            handleClose();
+            submit();
+            // refresh();
+            }}>
+            확인
+          </Button>
+        </Modal.Footer>
+      </Modal>
+        {/* {list.map(spending_data => <DataGrid checkboxSelection rows={spending_data} columns={columns}/>)} */}
+        <DataGrid checkboxSelection rows={list} columns={columns} />
       </Box>
     </Box>
+    </div>
+    </div>
   );
+  
 };
+
 
 export default Spending;

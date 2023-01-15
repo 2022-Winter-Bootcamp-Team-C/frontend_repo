@@ -3,7 +3,6 @@ import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { useState,  useEffect } from "react";
 import axios from "axios";
-import { mockDataInvoices } from "../../data/mockData";
 import Header from "../../components/Header";
 
 import Button from 'react-bootstrap/Button';
@@ -11,6 +10,8 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Sidebar from '../global/Sidebar';
+import Topbar from '../global/Topbar';
 
 const Invoices = () => {
   let today = new Date();  
@@ -22,6 +23,7 @@ const Invoices = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [isSidebar, setIsSidebar] = useState(true);
   const [data, setData] = useState(null);
 
     // const onClick = useEffect(() => {
@@ -36,11 +38,6 @@ const Invoices = () => {
     {
       field: "date",
       headerName: "날짜",
-      flex: 1,
-    },
-    {
-      field: "purpose",
-      headerName: "용도",
       flex: 1,
     },
     {
@@ -60,11 +57,6 @@ const Invoices = () => {
       // ),
     },
     {
-      field : "image",
-      headerName: "이미지 여부",
-      flex : 1,
-    },
-    {
       // renderCell : (parms) =>(
       // <Button variant="outlined" startIcon={<DeleteIcon/>}>
       //   삭제
@@ -73,9 +65,24 @@ const Invoices = () => {
       
     }
   ];
+  const mockDataInvoices = [
+    {
+      id: 1,
+      date : "2021-12-12",
+      purpose : "용도",
+      memo : "메모",
+      cost : 1212,
+      image : "no"
+    }
+  ];
 
   return (
-    
+    <div className="app">
+          <Sidebar isSidebar={isSidebar} />
+    <main className="content">
+          <Topbar setIsSidebar={setIsSidebar} />
+    </main>
+    <div className="size">
     <Box m="20px">
       <Header title="수입내역" subtitle={(year + '년 '+ month + '월')}/>
 
@@ -114,17 +121,29 @@ const Invoices = () => {
           .modal-title, .form-label {
             color: black;
           }
-          .form-label.m{
-            margin-left: 10%;
-          }
           .btn-primary.main{
-           margin-left: 92%;
-           margin-bottom : 10px;
+            width : 100px;
+           margin-top : -60px;
+           margin-left: 90%;
+           margin-bottom : 5px;
           }
           .btn-primary.center{
+           width : 100px;
            margin-top : 10px;
            margin-bottom : 10px;
-           margin-left: 85%;
+           margin-left: 70%;
+          }
+          .btn-secondary.center{
+            width : 100px;
+          }
+          .btn-primary.second{
+            margin-right:13%;
+            width : 100px;
+            border-radius:6px;
+          }
+          .m {
+            margin-left:8px;
+            font-size : 12px;
           }
        `}
       </style>
@@ -134,7 +153,7 @@ const Invoices = () => {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>지출 내역 추가</Modal.Title>
+          <Modal.Title>수입 내역 추가</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -154,17 +173,6 @@ const Invoices = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-            <Form.Label>용도</Form.Label>
-              <select class="form-select" aria-label="Default select example">
-                <option selected>용도를 선택하세요.</option>
-                <option value="1">식사</option>
-                <option value="2">술/유흥</option>
-                <option value="3">뷰티/미용</option>
-                <option value="4">교통/차량</option>
-                <option value="5">주거/통신</option>
-              </select>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
             <Form.Label>금액</Form.Label>
               <Form.Control
                 type="number"
@@ -172,25 +180,13 @@ const Invoices = () => {
                 autoFocus
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-            <Form.Label>영수증 OCR</Form.Label>
-              <Form.Control
-                type="file"
-                placeholder=""
-                autoFocus
-              />
-               <Button variant="primary center" onClick={handleShow}>
-                 업로드
-               </Button><br/>
-               <Form.Label className="m">❗영수증 이미지를 업로드 하면, 자동으로 가계부를 작성해드립니다❗</Form.Label>
-            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary center" onClick={handleClose}>
             닫기
           </Button>
-          <Button type="submit" variant="primary" onClick={()=> {
+          <Button type="submit" variant="primary second" onClick={()=> {
             handleClose()
             // onClick()
              }}>
@@ -202,6 +198,8 @@ const Invoices = () => {
         <DataGrid checkboxSelection rows={mockDataInvoices} columns={columns} />
       </Box>
     </Box>
+    </div>
+    </div>
   );
   
 };

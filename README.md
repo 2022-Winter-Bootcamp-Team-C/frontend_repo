@@ -1,1 +1,4 @@
-# frontend_repo
+# React Admin Dashboard
+
+Completed React Admin Dashboard Repo
+
