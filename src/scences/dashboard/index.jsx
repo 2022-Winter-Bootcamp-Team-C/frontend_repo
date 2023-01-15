@@ -9,10 +9,13 @@ import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
+import Sidebar from '../global/Sidebar';
+import Topbar from '../global/Topbar';
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [isSidebar, setIsSidebar] = useState(true);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -23,6 +26,13 @@ const Dashboard = () => {
   }, [])
 
   return (
+    <div className="app">
+          <Sidebar isSidebar={isSidebar} />
+    <main className="content">
+          <Topbar setIsSidebar={setIsSidebar}  />
+    </main>
+ 
+    <div className="size">
     <Box m="20px">
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -165,9 +175,14 @@ const Dashboard = () => {
             </Typography>
             <Typography>소비를 덜 하고싶다면 챌린지 참여해보세요 </Typography>
           </Box>
+          
         </Box>
+        
       </Box>
+      
     </Box>
+    </div>
+    </div>
   );
 };
 

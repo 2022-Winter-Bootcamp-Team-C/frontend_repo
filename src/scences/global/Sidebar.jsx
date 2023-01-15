@@ -11,11 +11,13 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import SavingsIcon from '@mui/icons-material/Savings';
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   return (
+    
     <MenuItem
       active={selected === title}
       style={{
@@ -28,14 +30,16 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       <Link to={to} />
     </MenuItem>
   );
+  
 };
+
 
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-
+  
   return (
     <Box
       sx={{
@@ -74,7 +78,7 @@ const Sidebar = () => {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant="h4" color={colors.grey[100]}>
+                <Typography variant="h5" color={colors.grey[100]}>
                   SHOW me the money
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
@@ -88,7 +92,7 @@ const Sidebar = () => {
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
               title="Dashboard"
-              to="/"
+              to="/dashboard"
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -103,7 +107,7 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="수입내역"
-              to="/invoices"
+              to="/income"
               icon={<TrendingUpIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -164,12 +168,12 @@ const Sidebar = () => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-            test
+            
             </Typography>
             <Item
-              title="test"
-              to="/test"
-              icon={<SavingsIcon />}
+              title="로그아웃"
+              to="/"
+              icon={<LogoutIcon />}
               selected={selected}
               setSelected={setSelected}
             />

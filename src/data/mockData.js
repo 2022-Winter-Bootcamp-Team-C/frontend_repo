@@ -1,42 +1,29 @@
 import { tokens } from "../theme";
 
-export const mockDataTeam = [
-  {
-    id: 1,
-    date : "2021-12-12",
-    purpose : "용도",
-    memo : "메모",
-    cost : 1212,
-    image : "no"
-  },
-  {
-    id: 2,
-    name: "Cersei Lannister",
-    email: "cerseilannister@gmail.com",
-    age: 42,
-    phone: "(421)314-2288",
-    access: "manager",
-  },
-];
+  
 
-export const mockDataInvoices = [
-  {
-    id: 1,
-    date : "2021-12-12",
-    purpose : "용도",
-    memo : "메모",
-    cost : 1212,
-    image : "no"
-  },
-  {
-    id: 2,
-    name: "Cersei Lannister",
-    memo: "cerseilannister@gmail.com",
-    cost: "1.24",
-    purpose: "(421)314-2288",
-    date: "06/15/2021",
-  },
-];
+// export const mockDataSpend = [
+//   {
+//     id: 1,
+//     date : "2021-12-12",
+//     purpose : "용도",
+//     memo : "메모",
+//     cost : 1212,
+//     image : "no"
+//   }
+// ];
+
+// export const mockDataInvoices = [
+//   {
+//     id: 1,
+//     date : "2021-12-12",
+//     purpose : "용도",
+//     memo : "메모",
+//     cost : 1212,
+//     image : "no"
+//   },
+
+// ];
 
 export const mockBarData = [
   {
