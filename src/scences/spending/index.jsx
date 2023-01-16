@@ -1,9 +1,9 @@
 import { Box, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { memo, useState, useEffect  } from "react";
-import axios from "axios";
+import { useState, useEffect, useRef } from "react";
 
+import axios from "axios";
 import Header from "../../components/Header";
 
 import Button from 'react-bootstrap/Button';
@@ -13,7 +13,6 @@ import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from '../global/Sidebar';
 import Topbar from '../global/Topbar';
-
 
 const Spending = () => {
   
@@ -27,11 +26,14 @@ const Spending = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [isSidebar, setIsSidebar] = useState(true);
+  const [list,setlist] = useState([]);
 
-  // const memoRef = useRef()
-  // const costRef = useRef()
-  // const whenRef = useRef()
-  // const purposeRef = useRef()
+
+  const memoRef = useRef()
+  const costRef = useRef()
+  const whenRef = useRef()
+  const purposeRef = useRef()
+
   //지출 내역 데이터 POST
   const [data, setData] = useState({
       when: "",
@@ -41,8 +43,9 @@ const Spending = () => {
   })
 
   function submit(e){
+    let user_id = localStorage.getItem("user_id")
     axios.post('http://127.0.0.1:8000/api/v1/spending/new/',{
-      "user" : "3e6eb5ec067f4d39ad6f4165bcec8386", //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
+      user : user_id, //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
       //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
       when: data.when,
       memo: data.memo,
@@ -50,18 +53,16 @@ const Spending = () => {
       cost: data.cost
     })
       .then(res => {
-        // memoRef.current.value = "";
-        // costRef.current.value = "";
-        // whenRef.current.value = "";
-        // purposeRef.current.value = "";
-        setlist(prev => prev.push(res.data))
+        memoRef.current.value = "";
+        costRef.current.value = "";
+        whenRef.current.value = "";
+        purposeRef.current.value = "";
+        setlist([...list, ...res.data])
       }) 
       .catch(function (error) {
         console.log(error);
       });
   }
- //fetch spending후에 set 으로 가지고올것
-
   function handle(e){
     const newdata = {...data}
     newdata[e.target.id] = e.target.value
@@ -71,7 +72,6 @@ const Spending = () => {
 //msw
 // ocr 모델
 const [file, setFile] = useState(false);
-const [list,setlist] = useState([]);
   const handleInputChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -86,25 +86,33 @@ const [list,setlist] = useState([]);
       console.log("성공! ", JSON.stringify(data));
     });
   };
-
-  
-
-  // const rows = [ //list
-  //   {
-  //     id: 1,
-  //     purpose: (data.purpose),
-  //     when: (data.when),
-  //     cost : (data.cost),
-  //     memo : (data.memo)
-  //   },
-  //   {
-  //     id: 1,
-  //     purpose: (data.purpose),
-  //     when: (data.when),
-  //     cost : (data.cost),
-  //     memo : (data.memo)
+  // const handleDelete = (e)=>{
+  //   if(window.confirm("삭제를 원하시면 확인 버튼을 눌러주세요.")){
+  //     axios.delete(`http://127.0.0.1:8000/api/v1/spending/${data.spending_list.id}`) //spending_id 를 호출 해야함
+  //     .then(response => {
+  //         console.log(response);
+  //     })
+  //     .catch(error => {
+  //         console.log(error);
+  //     })
   //   }
-  // ]
+  // }
+  // function handleEdit(e){
+  //   axios.put('http://127.0.0.1:8000/api/v1/spending/152ed1c5191a4168a3bca4fce51db775',{
+  //     user : "3e6eb5ec067f4d39ad6f4165bcec8386",
+  //     when: data.when,
+  //     memo: data.memo,
+  //     purpose: data.purpose,
+  //     cost: data.cost
+  //   })
+  //     .then(res => {
+  //       console.log(res);
+  //     }) 
+  //     .catch(function (error) {
+  //       console.log(error);
+  //     });
+  // }
+
 
 
   const columns = [
@@ -112,53 +120,61 @@ const [list,setlist] = useState([]);
       field: "when",
       headerName: "날짜",
       flex: 1,
+      editable: true,
     },
     {
       field: "purpose",
       headerName: "용도",
       flex: 1,
+      editable: true,
     },
     {
       field: "memo",
       headerName: "메모",
       flex: 1,
+      editable: true,
     },
     {
       field: "cost",
       headerName: "금액",
       flex: 1,
+      editable: true,
     },
     {
-      renderCell : (parms) =>(
-      <Button variant="outlined" >
+      field : 'action',
+      headerName: "수정,삭제",
+      flex: 1,
+        renderCell : (params) =>(
+        <>
+        <Button className = "ListEdit"
+         onClick ={() => {
+          // handleEdit();
+         }}
+        >수정</Button>
+        <Button className='ListDelete'
+        onClick ={() => {
+          // handleDelete();
+          window.location.reload()
+        }}
+        >
         삭제
-      </Button>
-      )
+        </Button>
+        </>
+        )
     }
 
-    // { title: "날짜", field: "date", headerName: "날짜", flex: 1,
-    //   validate: setData => data.when === undefined || data.when === "" ? "Required" : true },
-    // {
-    //   title: "용도", field: "purpose", headerName: "용도", flex: 1,
-    //   validate: setData => data.purpose === undefined || data.purpose === "" ? "Required" : true
-    // },
-    // {
-    //   title: "메모", field: "memo", headerName: "메모", flex: 1,
-    //   validate: setData => data.memo === undefined || data.memo === "" ? "Required" : true
-    // },
-    // {
-    //   title: "금액", field: 'cost',headerName: "금액", flex: 1,
-    //   validate: setData => data.cost === undefined || data.cost === "" ? "Required" : true
-    // }
   ];
-useEffect(() => {
-  axios.get('http://127.0.0.1:8000/api/v1/spending/spending-list/3e6eb5ec067f4d39ad6f4165bcec8386')
-  .then(res => 
-    setlist(res.data.spending_list)
-  )
-},[])
+  useEffect(() => {
+    const user_id = localStorage.getItem("user_id")
+    axios.get(`http://127.0.0.1:8000/api/v1/spending/spending-list/${user_id}`)
+    .then(res => 
+      setlist(res.data.spending_list),
+      console.log(user_id)
+    )
+  },[])
+
   return (
-    <div className="app">
+    <div className="app" >
           <Sidebar isSidebar={isSidebar} />
     <main className="content">
           <Topbar setIsSidebar={setIsSidebar} />
@@ -240,7 +256,7 @@ useEffect(() => {
             <Form.Group className="mb-3" >
               <Form.Label>날짜</Form.Label >
               <Form.Control
-                // ref={whenRef}
+                ref={whenRef}
                 type="date"
                 autoFocus
                 onChange={(e) => handle(e)} id ="when" value ={data.when} method="post"
@@ -249,7 +265,7 @@ useEffect(() => {
             <Form.Group className="mb-3" >
             <Form.Label>메모</Form.Label>
               <Form.Control
-                // ref={memoRef}
+                ref={memoRef}
                 type="text"
                 placeholder="메모 (최대 50자)"
                 autoFocus
@@ -258,7 +274,7 @@ useEffect(() => {
             </Form.Group>
             <Form.Group className="mb-3">
             <Form.Label>용도</Form.Label>
-              <select class="form-select" onChange={(e) => handle(e)} id ="purpose" value ={data.purpose} method="post">
+              <select class="form-select" ref={purposeRef} onChange={(e) => handle(e)} id ="purpose" value ={data.purpose} method="post">
                 <option selected>용도를 선택하세요.</option>
                 <option value="식사">식사</option>
                 <option value="술/유흥">술/유흥</option>
@@ -267,10 +283,10 @@ useEffect(() => {
                 <option value="주거/통신">주거/통신</option>
               </select>
             </Form.Group>
-            <Form.Group className="mb-3"  >
+            <Form.Group className="mb-3" >
             <Form.Label>금액</Form.Label>
               <Form.Control
-                // ref={costRef}
+                ref={costRef}
                 type="number"
                 placeholder="금액을 입력하세요."
                 autoFocus
@@ -304,14 +320,14 @@ useEffect(() => {
           <Button type="submit" variant="primary second" onClick={()=> {
             handleClose();
             submit();
-            // refresh();
+            window.location.reload()
             }}>
             확인
           </Button>
         </Modal.Footer>
       </Modal>
         {/* {list.map(spending_data => <DataGrid checkboxSelection rows={spending_data} columns={columns}/>)} */}
-        <DataGrid checkboxSelection rows={list} columns={columns} />
+        <DataGrid disableSelectionOnClick checkboxSelection rows={list} columns={columns} getRowId={list => list.id}  /> {/* onChange={(e) => {setlist(e.target.list)}}*/}
       </Box>
     </Box>
     </div>
