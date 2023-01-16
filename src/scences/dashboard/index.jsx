@@ -19,7 +19,7 @@ const Dashboard = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/v1/spending/total_spending/ea0d0ce50a9e49d69c9fd09a13d2529d')
+    axios.get('http://127.0.0.1:8000/api/v1/spending/total_spending/3e6eb5ec067f4d39ad6f4165bcec8386')
       .then(response => {
         setData(response.data)
       })
