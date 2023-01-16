@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -13,11 +14,13 @@ import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import LogoutIcon from '@mui/icons-material/Logout';
 
+
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+
   return (
-    
     <MenuItem
       active={selected === title}
       style={{
@@ -33,12 +36,43 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   
 };
 
+const logout = () => {
+  localStorage.clear()
+}
+
+const LItem = ({ title,  icon, selected, setSelected }) => {
+  const navigate = useNavigate(); 
+  // const logoutTheme = useTheme();
+  // const logoutColors = tokens(theme.palette.mode);
+
+  return (
+    <MenuItem
+      // active={selected === title}
+      // style={{
+      //   color: colors.grey[100],
+      // }}
+      onClick={() => {
+        setSelected(title);
+        logout();
+        navigate('/');
+      }}
+      icon={icon}
+    >
+      <Typography>{title}</Typography>
+    </MenuItem>
+  );
+};
+
+
 
 const Sidebar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+
+
+
   
   return (
     <Box
@@ -90,6 +124,7 @@ const Sidebar = () => {
 
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
+            
             <Item
               title="Dashboard"
               to="/dashboard"
@@ -170,13 +205,15 @@ const Sidebar = () => {
             >
             
             </Typography>
-            <Item
+            <LItem
               title="로그아웃"
-              to="/"
+              onClick={() => logout()}
               icon={<LogoutIcon />}
               selected={selected}
-              setSelected={setSelected}
+              setSelected={setSelected}      
             />
+            
+            
 
           </Box>
         </Menu>
