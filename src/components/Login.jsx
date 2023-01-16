@@ -46,7 +46,7 @@ const Login = () => {
     // });
     // }
 
-    axios.post('http://127.0.0.1:8000/api/v1/user/login',
+    axios.post('http://127.0.0.1:8000/api/v1/user/login/',
     {
       email: email,
       password: password,
@@ -54,9 +54,13 @@ const Login = () => {
     .then((response)=> {
       console.log("로그인 성공!");
       alert("로그인을 환영합니다!");
-      setTimeout(()=> {
-        navigate("/dashboard");
-      }, 1000);
+      console.log(response.data)
+      localStorage.clear()
+      localStorage.setItem('user_id', response.data.user_id)
+            // window.location.replace('http://localhost:3000/dashboard')
+            setTimeout(()=> {
+              navigate("/dashboard");
+            }, 1000);
     })
     .catch(function(error) {
     alert("이메일과 비밀번호를 다시 확인해주세요!")
