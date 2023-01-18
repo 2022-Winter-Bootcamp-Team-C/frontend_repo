@@ -18,8 +18,15 @@ const Dashboard = () => {
   const [isSidebar, setIsSidebar] = useState(true);
   const [data, setData] = useState([]);
 
+
+
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/v1/spending/total_spending/3e6eb5ec067f4d39ad6f4165bcec8386')
+    const user_id = localStorage.getItem("user_id")
+    axios.get(`http://127.0.0.1:8000/api/v1/spending/total_spending/${user_id}`)
+      .then(response => {
+        setData(response.data)
+      })
+      axios.get(`http://127.0.0.1:8000/api/v1/income/income_list/${user_id}`)
       .then(response => {
         setData(response.data)
       })
@@ -55,7 +62,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
+            title= {data.total_cost}
             subtitle="수입"
             progress="0.75"
             icon={

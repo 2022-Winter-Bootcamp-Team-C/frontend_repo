@@ -57,7 +57,6 @@ const Login = () => {
       console.log(response.data)
       localStorage.clear()
       localStorage.setItem('user_id', response.data.user_id)
-            // window.location.replace('http://localhost:3000/dashboard')
             setTimeout(()=> {
               navigate("/dashboard");
             }, 1000);
@@ -68,7 +67,6 @@ const Login = () => {
     console.log(error);
     });
   }
-
 
   return (
 
@@ -82,7 +80,6 @@ const Login = () => {
         </Form.Text>
       </Form.Group>
       
-
       <Form.Group className="mb-3" controlId="formBasicPassword">
         <Form.Label>비밀번호</Form.Label>
         <Form.Control type="password" placeholder="비밀번호" onChange={(e)=>{setPassword(e.target.value);}}/>
@@ -90,16 +87,11 @@ const Login = () => {
       <Form.Group className="mb-3" controlId="formBasicCheckbox">
       </Form.Group>
       
-
-      
       <LoginButton variant="primary one" onClick={checkUser}>로그인</LoginButton>{' '}
       <LoginButton variant="primary two" onClick={navigateToSignup}>회원가입</LoginButton>{' '}
-     
     </Form>
     </div>
   );
 }
-
-
 
 export default Login;
