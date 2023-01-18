@@ -2,6 +2,8 @@ import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
 import { mockPieData as data } from "../data/mockData";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const PieChart = () => {
   const theme = useTheme();
