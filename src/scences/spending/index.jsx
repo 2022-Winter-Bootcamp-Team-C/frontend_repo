@@ -15,8 +15,9 @@ import Topbar from '../global/Topbar';
 const Spending = () => {
   
   let today = new Date();  
-  let year = today.getFullYear(); // 년도
-  let month = today.getMonth() + 1;  // 월
+  let year = today.getFullYear(); 
+  let month = today.getMonth() + 1; 
+  let user_id = localStorage.getItem("user_id")
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -28,6 +29,9 @@ const Spending = () => {
   const handleShow = () => setShow(true);
 
 
+  const [ocrata, setocrdata] = useState([]);
+
+
   const memoRef = useRef()
   const costRef = useRef()
   const whenRef = useRef()
@@ -37,15 +41,15 @@ const Spending = () => {
       when: "",
       memo: "",
       purpose: "",
-      cost: "", //초기값
+      cost: "", 
+      ocr_img: null,
   })
   
   // 지출 내역 POST
   function submit(e){
     let user_id = localStorage.getItem("user_id")
     axios.post('http://127.0.0.1:8000/api/v1/spending/new/',{
-      user : user_id, //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
-      //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
+      user : user_id,
       when: data.when,
       memo: data.memo,
       purpose: data.purpose,
@@ -71,7 +75,7 @@ const Spending = () => {
     console.log(newdata)
   }
 
-  // ocr 
+
   const handleInputChange = (event) => {
       setFile(event.target.files[0]);
     };
@@ -82,38 +86,53 @@ const Spending = () => {
     formData.append("files", file);
     axios({
       method: "post",
-      url: "http://127.0.0.1:8000/api/v1/ocr",
+      url: "http://127.0.0.1:8000/api/v1/ocr/",
       data: formData
     }).then(({ data }) => {
-      console.log("성공! ", JSON.stringify(data));
+      console.log(JSON.stringify(data));
+      setData({
+        user : user_id,
+        when: data.date,
+        memo: data.memo,
+        purpose: data.purpose,
+        cost: data.cost
+      })
     });
   };
-  // const handleDelete = (e)=>{
-  //   if(window.confirm("삭제를 원하시면 확인 버튼을 눌러주세요.")){
-  //     axios.delete(`http://127.0.0.1:8000/api/v1/spending/${data.spending_list.id}`) //spending_id 를 호출 해야함
-  //     .then(response => {
-  //         console.log(response);
-  //     })
-  //     .catch(error => {
-  //         console.log(error);
-  //     })
-  //   }
-  // }
-  // function handleEdit(e){
-  //   axios.put('http://127.0.0.1:8000/api/v1/spending/152ed1c5191a4168a3bca4fce51db775',{
-  //     user : "3e6eb5ec067f4d39ad6f4165bcec8386",
-  //     when: data.when,
-  //     memo: data.memo,
-  //     purpose: data.purpose,
-  //     cost: data.cost
-  //   })
-  //     .then(res => {
-  //       console.log(res);
-  //     }) 
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  // }
+
+
+
+  // DELETE
+  const handleDelete = (id)=>{
+    if(window.confirm("삭제를 원하시면 확인 버튼을 눌러주세요.")){
+      axios.delete(`http://127.0.0.1:8000/api/v1/spending/${id}`) //spending_id 를 호출 해야함
+      .then(response => {
+          console.log(response);
+      })
+      .catch(error => {
+          console.log(error);
+      })
+    }
+  }
+
+
+// UPDATE
+  const handleEdit= (id) => {
+    axios.put(`http://127.0.0.1:8000/api/v1/spending/${id}`)
+      .then(res => {
+        console.log(res);
+        setData({
+          user : user_id,
+          when: data.date,
+          memo: data.memo,
+          purpose: data.purpose,
+          cost: data.cost
+        })
+      }) 
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
 
   // 지출 내역 DELETE
   const handleDelete = (id)=>{
@@ -198,9 +217,10 @@ const Spending = () => {
     const user_id = localStorage.getItem("user_id")
     axios.get(`http://127.0.0.1:8000/api/v1/spending/spending-list/${user_id}`)
     .then(res => {
-      setlist(res.data.spending_list);
+      setlist(res.data.spending_list);   
     })
   },[])
+  
 
   return (
     <div className="app" >
@@ -327,7 +347,7 @@ const Spending = () => {
             <Form.Label>금액</Form.Label>
               <Form.Control
                 ref={costRef}
-                type="number"
+                type="text"
                 placeholder="금액을 입력하세요."
                 autoFocus
                 onChange={(e) => handle(e)}
@@ -366,15 +386,12 @@ const Spending = () => {
             }}> 확인 </Button>
         </Modal.Footer>
       </Modal>
+
         <DataGrid 
         onSelectionModelChange={datas => {console.log(datas.toString())}}
         checkboxSelection rows={list}
         columns={columns}
         getRowId={list => list.id} />
-        {/* onChange={(e) => {setlist(e.target.list)}}
-        {list.map(spending => (
-          <SpendingItem spending={spending}/>
-        ))} */}
       </Box>
     </Box>
     </div>

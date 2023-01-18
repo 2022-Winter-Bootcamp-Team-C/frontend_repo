@@ -23,6 +23,8 @@ const Dashboard = () => {
   const [threeincomedata,setThreeIncomeTotalData] = useState([]);
   const user_id = localStorage.getItem("user_id")
 
+
+
   useEffect(() => {
     const spend = ()=> {
     axios.get(`http://127.0.0.1:8000/api/v1/spending/total_spending/${user_id}`)

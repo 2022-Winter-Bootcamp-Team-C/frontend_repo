@@ -29,7 +29,7 @@ function IntroSwiper(props){
 
       <SwiperSlide>
           <div className = "intro">
-               <img className = "main-image"src={Sub_one} />
+               <img className = "main-image"src={Sub_one} alt="website"/>
                <p className = "main-one">#잃어버린 #텅장을 #찾아서</p>
                <p className = "main-two"> SHOW ME THE MONEY </p>
                <p className = "main-three">줄줄새는 내돈<br/>꽉 잡아줄 나만의 가계부</p>
@@ -39,7 +39,7 @@ function IntroSwiper(props){
                
       <SwiperSlide>
           <div className = "intro">
-               <img className = "main-image"src={Sub_two} />
+               <img className = "main-image"src={Sub_two} alt="chart"/>
                <p className = "main-one">#잃어버린 #텅장을 #찾아서</p>
                <p className = "main-two"> SHOW ME THE MONEY </p>
                <p className = "main-three">줄줄새는 내돈<br/>꽉 잡아줄 나만의 가계부</p>
@@ -48,7 +48,7 @@ function IntroSwiper(props){
       </SwiperSlide>
       <SwiperSlide>
           <div className = "intro">
-               <img className = "main-image"src={Sub_three} />
+               <img className = "main-image"src={Sub_three} alt="loading"/>
                <p className = "main-one">#잃어버린 #텅장을 #찾아서</p>
                <p className = "main-two"> SHOW ME THE MONEY </p>
                <p className = "main-three">줄줄새는 내돈<br/>꽉 잡아줄 나만의 가계부</p>
@@ -57,7 +57,7 @@ function IntroSwiper(props){
       </SwiperSlide>
       <SwiperSlide>
           <div className = "intro">
-               <img className = "main-image"src={Sub_four} />
+               <img className = "main-image"src={Sub_four} alt="typing"/>
                <p className = "main-one">#잃어버린 #텅장을 #찾아서</p>
                <p className = "main-two"> SHOW ME THE MONEY </p>
                <p className = "main-three">줄줄새는 내돈<br/>꽉 잡아줄 나만의 가계부</p>
