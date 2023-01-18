@@ -17,8 +17,9 @@ import Topbar from '../global/Topbar';
 const Spending = () => {
   
   let today = new Date();  
-  let year = today.getFullYear(); // 년도
-  let month = today.getMonth() + 1;  // 월
+  let year = today.getFullYear(); 
+  let month = today.getMonth() + 1; 
+  let user_id = localStorage.getItem("user_id")
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -27,7 +28,7 @@ const Spending = () => {
   const handleShow = () => setShow(true);
   const [isSidebar, setIsSidebar] = useState(true);
   const [list,setlist] = useState([]);
-
+  const [ocrata, setocrdata] = useState([]);
 
   const memoRef = useRef()
   const costRef = useRef()
@@ -39,14 +40,14 @@ const Spending = () => {
       when: "",
       memo: "",
       purpose: "",
-      cost: "", //초기값
+      cost: "", 
+      ocr_img: null,
   })
-
+// POST
   function submit(e){
     let user_id = localStorage.getItem("user_id")
     axios.post('http://127.0.0.1:8000/api/v1/spending/new/',{
-      user : user_id, //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
-      //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
+      user : user_id,
       when: data.when,
       memo: data.memo,
       purpose: data.purpose,
@@ -69,49 +70,69 @@ const Spending = () => {
     setData(newdata)
     console.log(newdata)
   }
-//msw
+
+
+
 // ocr 모델
 const [file, setFile] = useState(false);
   const handleInputChange = (event) => {
     setFile(event.target.files[0]);
   };
-  const upload = (e) => {
+
+// 업로드 버튼 클릭시
+  const upload = () => {
     let formData = new FormData();
     formData.append("files", file);
     axios({
       method: "post",
-      url: "http://127.0.0.1:8000/api/v1/ocr",
+      url: "http://127.0.0.1:8000/api/v1/ocr/",
       data: formData
     }).then(({ data }) => {
-      console.log("성공! ", JSON.stringify(data));
+      console.log(JSON.stringify(data));
+      setData({
+        user : user_id,
+        when: data.date,
+        memo: data.memo,
+        purpose: data.purpose,
+        cost: data.cost
+      })
     });
   };
-  // const handleDelete = (e)=>{
-  //   if(window.confirm("삭제를 원하시면 확인 버튼을 눌러주세요.")){
-  //     axios.delete(`http://127.0.0.1:8000/api/v1/spending/${data.spending_list.id}`) //spending_id 를 호출 해야함
-  //     .then(response => {
-  //         console.log(response);
-  //     })
-  //     .catch(error => {
-  //         console.log(error);
-  //     })
-  //   }
-  // }
-  // function handleEdit(e){
-  //   axios.put('http://127.0.0.1:8000/api/v1/spending/152ed1c5191a4168a3bca4fce51db775',{
-  //     user : "3e6eb5ec067f4d39ad6f4165bcec8386",
-  //     when: data.when,
-  //     memo: data.memo,
-  //     purpose: data.purpose,
-  //     cost: data.cost
-  //   })
-  //     .then(res => {
-  //       console.log(res);
-  //     }) 
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  // }
+
+
+
+
+  // DELETE
+  const handleDelete = (id)=>{
+    if(window.confirm("삭제를 원하시면 확인 버튼을 눌러주세요.")){
+      axios.delete(`http://127.0.0.1:8000/api/v1/spending/${id}`) //spending_id 를 호출 해야함
+      .then(response => {
+          console.log(response);
+      })
+      .catch(error => {
+          console.log(error);
+      })
+    }
+  }
+
+
+// UPDATE
+  const handleEdit= (id) => {
+    axios.put(`http://127.0.0.1:8000/api/v1/spending/${id}`)
+      .then(res => {
+        console.log(res);
+        setData({
+          user : user_id,
+          when: data.date,
+          memo: data.memo,
+          purpose: data.purpose,
+          cost: data.cost
+        })
+      }) 
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
 
 
 
@@ -144,34 +165,40 @@ const [file, setFile] = useState(false);
       field : 'action',
       headerName: "수정,삭제",
       flex: 1,
-        renderCell : (params) =>(
-        <>
-        <Button className = "ListEdit"
-         onClick ={() => {
-          // handleEdit();
-         }}
-        >수정</Button>
-        <Button className='ListDelete'
-        onClick ={() => {
-          // handleDelete();
-          window.location.reload()
-        }}
-        >
-        삭제
-        </Button>
-        </>
-        )
+        renderCell : ({row: {id}}) =>{
+        
+          return (
+            <>
+              <Button className = "ListEdit"
+                onClick ={() => {
+                  handleEdit();
+                }}
+              >수정</Button>
+              <Button className='ListDelete'
+                onClick ={(e) => {
+                  handleDelete(id);
+                  window.location.reload()
+              }}
+              >
+              삭제
+              </Button>
+            </>
+        )}
     }
 
   ];
+  //GET
   useEffect(() => {
     const user_id = localStorage.getItem("user_id")
     axios.get(`http://127.0.0.1:8000/api/v1/spending/spending-list/${user_id}`)
-    .then(res => 
-      setlist(res.data.spending_list),
-      console.log(user_id)
-    )
+    .then(res => {
+      //Speding_id localstorage 저장
+      setlist(res.data.spending_list);
+      // const ids = res.data.spending_list.map(list => list.id);
+      // localStorage.setItem('ids', (ids))
+    })
   },[])
+  
 
   return (
     <div className="app" >
@@ -287,9 +314,10 @@ const [file, setFile] = useState(false);
             <Form.Label>금액</Form.Label>
               <Form.Control
                 ref={costRef}
-                type="number"
+                type="text"
                 placeholder="금액을 입력하세요."
                 autoFocus
+                // oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')"
                 onChange={(e) => handle(e)} id ="cost" value ={data.cost} method="post"
               />
             </Form.Group>
@@ -327,7 +355,11 @@ const [file, setFile] = useState(false);
         </Modal.Footer>
       </Modal>
         {/* {list.map(spending_data => <DataGrid checkboxSelection rows={spending_data} columns={columns}/>)} */}
-        <DataGrid disableSelectionOnClick checkboxSelection rows={list} columns={columns} getRowId={list => list.id}  /> {/* onChange={(e) => {setlist(e.target.list)}}*/}
+        <DataGrid onSelectionModelChange={datas => {console.log(datas.toString())}}  checkboxSelection rows={list} columns={columns} getRowId={list => list.id}  />
+        {/* onChange={(e) => {setlist(e.target.list)}}
+        {list.map(spending => (
+          <SpendingItem spending={spending}/>
+        ))} */}
       </Box>
     </Box>
     </div>
@@ -338,3 +370,10 @@ const [file, setFile] = useState(false);
 
 
 export default Spending;
+
+function SpendingItem({spending}) {
+  return ( <div>
+    <span>{spending.id}</span>
+    <button type='button' onClick={() => alert(`Spending id clicked: ${spending.id}`)}>CLICK</button>
+  </div>)
+}
