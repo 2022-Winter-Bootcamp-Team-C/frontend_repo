@@ -15,21 +15,24 @@ import Topbar from '../global/Topbar';
 const Spending = () => {
   
   let today = new Date();  
-  let year = today.getFullYear(); 
-  let month = today.getMonth() + 1; 
-  let user_id = localStorage.getItem("user_id")
+  let year = today.getFullYear(); // 년도
+  let month = today.getMonth() + 1;  // 월
 
+  let user_id = localStorage.getItem("user_id")
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [show, setShow] = useState(false);
+  const [editShow, setEditShow] = useState(false);
+
+  const [row, setRow] = useState("");
   const [isSidebar, setIsSidebar] = useState(true);
   const [list,setlist] = useState([]);
   const [file, setFile] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-
-  const [ocrata, setocrdata] = useState([]);
+  const handleEditClose = () => setEditShow(false);
+  const handleEditShow = () => setEditShow(true);
 
 
   const memoRef = useRef()
@@ -41,15 +44,14 @@ const Spending = () => {
       when: "",
       memo: "",
       purpose: "",
-      cost: "", 
-      ocr_img: null,
+      cost: "", //초기값
   })
   
   // 지출 내역 POST
   function submit(e){
-    let user_id = localStorage.getItem("user_id")
     axios.post('http://127.0.0.1:8000/api/v1/spending/new/',{
-      user : user_id,
+      user : user_id, //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
+      //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
       when: data.when,
       memo: data.memo,
       purpose: data.purpose,
@@ -75,7 +77,7 @@ const Spending = () => {
     console.log(newdata)
   }
 
-
+  // ocr 
   const handleInputChange = (event) => {
       setFile(event.target.files[0]);
     };
@@ -86,10 +88,10 @@ const Spending = () => {
     formData.append("files", file);
     axios({
       method: "post",
-      url: "http://127.0.0.1:8000/api/v1/ocr/",
+      url: "http://127.0.0.1:8000/api/v1/ocr",
       data: formData
     }).then(({ data }) => {
-      console.log(JSON.stringify(data));
+      console.log("성공! ", JSON.stringify(data));
       setData({
         user : user_id,
         when: data.date,
@@ -99,40 +101,6 @@ const Spending = () => {
       })
     });
   };
-
-
-
-  // DELETE
-  const handleDelete = (id)=>{
-    if(window.confirm("삭제를 원하시면 확인 버튼을 눌러주세요.")){
-      axios.delete(`http://127.0.0.1:8000/api/v1/spending/${id}`) //spending_id 를 호출 해야함
-      .then(response => {
-          console.log(response);
-      })
-      .catch(error => {
-          console.log(error);
-      })
-    }
-  }
-
-
-// UPDATE
-  const handleEdit= (id) => {
-    axios.put(`http://127.0.0.1:8000/api/v1/spending/${id}`)
-      .then(res => {
-        console.log(res);
-        setData({
-          user : user_id,
-          when: data.date,
-          memo: data.memo,
-          purpose: data.purpose,
-          cost: data.cost
-        })
-      }) 
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
 
   // 지출 내역 DELETE
   const handleDelete = (id)=>{
@@ -150,21 +118,46 @@ const Spending = () => {
 
 // 지출 내역 UPDATE
   const handleEdit= (id) => {
-    axios.put(`http://127.0.0.1:8000/api/v1/spending/${id}`)
+    axios.put(`http://127.0.0.1:8000/api/v1/spending/${id}`,{
+      user : user_id, //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
+      //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
+      when: data.when,
+      memo: data.memo,
+      purpose: data.purpose,
+      cost: data.cost
+    })
       .then(res => {
-        console.log(res);
-        setData({
-          user : user_id,
-          when: data.date,
-          memo: data.memo,
-          purpose: data.purpose,
-          cost: data.cost
-        })
+        memoRef.current.value = "";
+        costRef.current.value = "";
+        whenRef.current.value = "";
+        purposeRef.current.value = "";
+        setlist([...list, ...res.data])
       }) 
       .catch(function (error) {
         console.log(error);
       });
-  }
+    }
+
+
+
+
+
+      // .then(res => {
+      //   setData({
+      //     user: user_id,
+      //     when: data.when,
+      //     memo: data.memo,
+      //     purpose: data.purpose,
+      //     cost: data.cost
+      //   })
+      //   setlist([...list, ...res.data])
+      // }) 
+      // .catch(error =>  {
+      //   console.log(typeof(user_id, data.when, data.memo, data.purpose, data.cost))
+      //   console.log(user_id, data.when, data.memo, data.purpose, data.cost)
+      //   console.log(error);
+      // });
+  // }
 
   // DataGrid 열 (날짜, 용도, 메모, 금액)
   const columns = [
@@ -195,17 +188,22 @@ const Spending = () => {
     {
       field : 'action',
       headerName: "수정/삭제",
-      flex: 1,
+      flex: 1, 
         renderCell : ({row: {id}}) =>{
           return (
             <>
-              <Button className = "ListEdit"
-                onClick ={() => { handleEdit(); }}> 수정 </Button>
-              <Button className='ListDelete'
-                onClick ={(e) => {
-                  handleDelete(id);
-                  window.location.reload()
-              }}> 삭제 </Button>
+              <div className="button_postion">
+                <Button className = "ListEdit"
+                  onClick ={() => {
+                    setRow(id); 
+                    handleEditShow(id);
+                    }}> 수정 </Button>
+                <Button className='ListDelete'
+                  onClick ={() => {
+                    handleDelete(id);
+                    window.location.reload()
+                }}> 삭제 </Button>
+              </div>
             </>
         )}
     }
@@ -217,10 +215,9 @@ const Spending = () => {
     const user_id = localStorage.getItem("user_id")
     axios.get(`http://127.0.0.1:8000/api/v1/spending/spending-list/${user_id}`)
     .then(res => {
-      setlist(res.data.spending_list);   
+      setlist(res.data.spending_list);
     })
   },[])
-  
 
   return (
     <div className="app" >
@@ -263,6 +260,12 @@ const Spending = () => {
       
       <style type="text/css">
         {`
+          .btn.ListEdit {
+            margin :10px;
+          }
+          .button_postion{
+            margin-left :30px;
+          }
           .modal-title, .form-label {
             color: black;
           }
@@ -296,7 +299,7 @@ const Spending = () => {
             내역 추가
       </Button>
       
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose}> {/*post*/}
         <Modal.Header closeButton>
           <Modal.Title>지출 내역 추가</Modal.Title>
         </Modal.Header>
@@ -347,7 +350,7 @@ const Spending = () => {
             <Form.Label>금액</Form.Label>
               <Form.Control
                 ref={costRef}
-                type="text"
+                type="number"
                 placeholder="금액을 입력하세요."
                 autoFocus
                 onChange={(e) => handle(e)}
@@ -387,11 +390,109 @@ const Spending = () => {
         </Modal.Footer>
       </Modal>
 
+      <Modal show={editShow} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>지출 내역 수정</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" >
+              <Form.Label>날짜</Form.Label >
+              <Form.Control
+                ref={whenRef}
+                type="date"
+                autoFocus
+                onChange={(e) => handle(e)}
+                id ="when"
+                value ={data.when}
+                method="put"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" >
+            <Form.Label>메모</Form.Label>
+              <Form.Control
+                ref={memoRef}
+                type="text"
+                placeholder="메모 (최대 50자)"
+                autoFocus
+                onChange={(e) => handle(e)}
+                id ="memo"
+                value ={data.memo}
+                method="put"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+            <Form.Label>용도</Form.Label>
+              <select class="form-select" 
+              ref={purposeRef}
+              onChange={(e) => handle(e)}
+              id ="purpose"
+              value ={data.purpose}
+              method="put">
+                <option selected>용도를 선택하세요.</option>
+                <option value="식사">식사</option>
+                <option value="술/유흥">술/유흥</option>
+                <option value="뷰티/미용">뷰티/미용</option>
+                <option value="교통/차량">교통/차량</option>
+                <option value="주거/통신">주거/통신</option>
+              </select>
+            </Form.Group>
+            <Form.Group className="mb-3" >
+            <Form.Label>금액</Form.Label>
+              <Form.Control
+                ref={costRef}
+                type="number"
+                placeholder="금액을 입력하세요."
+                autoFocus
+                onChange={(e) => handle(e)}
+                id ="cost"
+                value ={data.cost}
+                method="put"
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+            <Form.Label>영수증 OCR</Form.Label>
+              <Form.Control
+                type="file"
+                autoFocus
+                accept="image/*" 
+                onChange={handleInputChange} 
+                method="put"
+              />
+               <Button variant="primary center"
+                onClick={() => {
+                handleShow();
+                upload();
+               }}> 업로드 </Button> <br/>
+               <Form.Label className="m">❗영수증 이미지를 업로드 하면, 자동으로 가계부를 작성해드립니다❗</Form.Label>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary center" onClick={handleEditClose}>
+            닫기
+          </Button>
+          
+          <Button type="submit" variant="primary second"
+           onClick={()=> {
+            console.log(Object.values(row));
+            handleEditClose();
+            handleEdit(row);         
+            window.location.reload()
+            }}> 확인 </Button>
+            
+          
+        </Modal.Footer>
+      </Modal>
         <DataGrid 
         onSelectionModelChange={datas => {console.log(datas.toString())}}
         checkboxSelection rows={list}
         columns={columns}
         getRowId={list => list.id} />
+        {/* onChange={(e) => {setlist(e.target.list)}}
+        {list.map(spending => (
+          <SpendingItem spending={spending}/>
+        ))} */}
       </Box>
     </Box>
     </div>

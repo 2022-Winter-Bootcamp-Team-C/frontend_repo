@@ -6,7 +6,7 @@ import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MoneyOffIcon from '@mui/icons-material/MoneyOff';
 import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
+import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import ProgressCircle from "../../components/ProgressCircle";
 import Sidebar from '../global/Sidebar';
@@ -23,8 +23,6 @@ const Dashboard = () => {
   const [threeincomedata,setThreeIncomeTotalData] = useState([]);
   const user_id = localStorage.getItem("user_id")
 
-
-
   useEffect(() => {
     const spend = ()=> {
     axios.get(`http://127.0.0.1:8000/api/v1/spending/total_spending/${user_id}`)
@@ -33,10 +31,10 @@ const Dashboard = () => {
       })
     }
     const income = ()=> {
-      axios.get(`http://127.0.0.1:8000/api/v1/income/income-list/${user_id}`)
+      axios.get(`http://127.0.0.1:8000/api/v1/income/total_income/${user_id}`)
       .then(response => {
         setIncomeData(response.data)
-        console.log(incomedata.total_cost)
+        console.log(response.data)
       })
     }
     const month_spend = () => {
@@ -95,7 +93,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title= {incomedata.total_cost+"원"}
+            title= {incomedata.total_income+"원"}
             subtitle="수입"
             progress="0.75"
             icon={
@@ -132,7 +130,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title = {threeincomedata.total_three_month_ago_income}
+            title = {threeincomedata.total_three_month_ago_income+"원"}
             subtitle="3개월 전 수입"
             progress="0.30"
             icon={
@@ -176,8 +174,8 @@ const Dashboard = () => {
           >
 
           </Box>
-          <Box height="250px" m="-20px 0 0 70px">
-            <LineChart isDashboard={true} />
+          <Box height="280px" m="-37px 0 0 70px">
+            <BarChart isDashboard={true} />
           </Box>
         </Box>
        

@@ -30,12 +30,10 @@ const Income = () => {
   const memoRef = useRef()
   const costRef = useRef()
   const whenRef = useRef()
-  const purposeRef = useRef()
 
   const [data, setData] = useState({
       when: "",
       memo: "",
-      purpose: "",
       cost: "", 
   })
   
@@ -46,14 +44,12 @@ const Income = () => {
       user : user_id,
       when: data.when,
       memo: data.memo,
-      purpose: data.purpose,
       cost: data.cost
     })
       .then(res => {
         memoRef.current.value = "";
         costRef.current.value = "";
         whenRef.current.value = "";
-        purposeRef.current.value = "";
         setlist([...list, ...res.data])
       }) 
       .catch(function (error) {
@@ -92,7 +88,6 @@ const Income = () => {
           user : user_id,
           when: data.date,
           memo: data.memo,
-          purpose: data.purpose,
           cost: data.cost
         })
       }) 
@@ -106,12 +101,6 @@ const Income = () => {
     {
       field: "when",
       headerName: "날짜",
-      flex: 1,
-      editable: true,
-    },
-    {
-      field: "purpose",
-      headerName: "용도",
       flex: 1,
       editable: true,
     },
@@ -134,13 +123,15 @@ const Income = () => {
         renderCell : ({row: {id}}) =>{
           return (
             <>
-              <Button className = "ListEdit"
-                onClick ={() => { handleEdit(); }}> 수정 </Button>
-              <Button className='ListDelete'
-                onClick ={(e) => {
-                  handleDelete(id);
-                  window.location.reload()
-              }}> 삭제 </Button>
+            <div className="button_postion">
+                <Button className = "ListEdit"
+                  onClick ={() => { handleEdit(); }}> 수정 </Button>
+                <Button className='ListDelete'
+                  onClick ={(e) => {
+                    handleDelete(id);
+                    window.location.reload()
+                }}> 삭제 </Button>
+            </div>
             </>
         )}
     }
@@ -197,6 +188,12 @@ const Income = () => {
       
       <style type="text/css">
         {`
+          .btn.ListEdit {
+            margin :10px;
+          }
+          .button_postion{
+            margin-left :30px;
+          }
           .modal-title, .form-label {
             color: black;
           }
@@ -261,22 +258,6 @@ const Income = () => {
                 method="post"
               />
             </Form.Group>
-             <Form.Group className="mb-3">
-            <Form.Label>용도</Form.Label>
-              <select class="form-select" 
-              ref={purposeRef}
-              onChange={(e) => handle(e)}
-              id ="purpose"
-              value ={data.purpose}
-              method="post">
-                <option selected>용도를 선택하세요.</option>
-                <option value="식사">식사</option>
-                <option value="술/유흥">술/유흥</option>
-                <option value="뷰티/미용">뷰티/미용</option>
-                <option value="교통/차량">교통/차량</option>
-                <option value="주거/통신">주거/통신</option>
-              </select>
-            </Form.Group>
             <Form.Group className="mb-3" >
             <Form.Label>금액</Form.Label>
               <Form.Control
@@ -293,6 +274,7 @@ const Income = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
+          
           <Button variant="secondary center" onClick={handleClose}>
             닫기
           </Button>
