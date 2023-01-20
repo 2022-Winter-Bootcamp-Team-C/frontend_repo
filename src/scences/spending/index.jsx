@@ -139,26 +139,6 @@ const Spending = () => {
     }
 
 
-
-
-
-      // .then(res => {
-      //   setData({
-      //     user: user_id,
-      //     when: data.when,
-      //     memo: data.memo,
-      //     purpose: data.purpose,
-      //     cost: data.cost
-      //   })
-      //   setlist([...list, ...res.data])
-      // }) 
-      // .catch(error =>  {
-      //   console.log(typeof(user_id, data.when, data.memo, data.purpose, data.cost))
-      //   console.log(user_id, data.when, data.memo, data.purpose, data.cost)
-      //   console.log(error);
-      // });
-  // }
-
   // DataGrid 열 (날짜, 용도, 메모, 금액)
   const columns = [
     {
