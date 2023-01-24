@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import LoginButton from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './Signup.css';
-import "./Signup.css";
+import "../components/css/Signup.css"
 import {useNavigate} from "react-router-dom";
 import axios from 'axios';
 
@@ -43,27 +42,17 @@ return(
         <Form.Text className="text-muted" ></Form.Text>
       </Form.Group>
       
-
       <Form.Group className="mb-4" controlId="formBasicPassword">
         <Form.Label>비밀번호</Form.Label>
         <Form.Control type="password" placeholder="비밀번호" onChange={(e)=>{setPassword(e.target.value);}}/>{/*onChange={(e)=>{setPassword(e.target.value);}}*/}
         <Form.Text className="text-muted"></Form.Text>
       </Form.Group>
 
-      {/* <Form.Group className="mb-4" controlId="formBasicPassword">
-        <Form.Label>비밀번호 확인</Form.Label>
-        <Form.Control type="verifypassword" placeholder="비밀번호" />
-      </Form.Group>
-      <Form.Group className="mb-4" controlId="formBasicCheckbox">
-      </Form.Group> */}
-      
       <LoginButton variant="primary three" onClick={() => {register()}} >회원가입</LoginButton>{''}
     </Form>
     </div>
      )
     
   }
-
-
 
 export default Signup;

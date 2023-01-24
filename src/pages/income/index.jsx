@@ -12,56 +12,49 @@ import Modal from 'react-bootstrap/Modal';
 import Sidebar from '../global/Sidebar';
 import Topbar from '../global/Topbar';
 
-const Spending = () => {
+const Income = () => {
   
   let today = new Date();  
-  let year = today.getFullYear(); // 년도
-  let month = today.getMonth() + 1;  // 월
-
+  let year = today.getFullYear(); 
+  let month = today.getMonth() + 1; 
   let user_id = localStorage.getItem("user_id")
+
   const theme = useTheme();
+  const [row, setRow] = useState("");
   const colors = tokens(theme.palette.mode);
   const [show, setShow] = useState(false);
+  const [isSidebar, setIsSidebar] = useState(true);
   const [editShow, setEditShow] = useState(false);
 
-  const [row, setRow] = useState("");
-  const [isSidebar, setIsSidebar] = useState(true);
   const [list,setlist] = useState([]);
-  const [file, setFile] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
   const handleEditClose = () => setEditShow(false);
   const handleEditShow = () => setEditShow(true);
-
 
   const memoRef = useRef()
   const costRef = useRef()
   const whenRef = useRef()
-  const purposeRef = useRef()
 
   const [data, setData] = useState({
       when: "",
       memo: "",
-      purpose: "",
-      cost: "", //초기값
+      cost: "", 
   })
   
-  // 지출 내역 POST
+  // 수입 내역 POST
   function submit(e){
-    axios.post('http://127.0.0.1:8000/api/v1/spending/new/',{
-      user : user_id, //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
-      //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
+    let user_id = localStorage.getItem("user_id")
+    axios.post('http://127.0.0.1:8000/api/v1/income/new/',{
+      user : user_id,
       when: data.when,
       memo: data.memo,
-      purpose: data.purpose,
       cost: data.cost
     })
       .then(res => {
         memoRef.current.value = "";
         costRef.current.value = "";
         whenRef.current.value = "";
-        purposeRef.current.value = "";
         setlist([...list, ...res.data])
       }) 
       .catch(function (error) {
@@ -77,35 +70,10 @@ const Spending = () => {
     console.log(newdata)
   }
 
-  // ocr 
-  const handleInputChange = (event) => {
-      setFile(event.target.files[0]);
-    };
-
-// ocr 업로드 버튼 클릭시
-  const upload = () => {
-    let formData = new FormData();
-    formData.append("files", file);
-    axios({
-      method: "post",
-      url: "http://127.0.0.1:8000/api/v1/ocr",
-      data: formData
-    }).then(({ data }) => {
-      console.log("성공! ", JSON.stringify(data));
-      setData({
-        user : user_id,
-        when: data.date,
-        memo: data.memo,
-        purpose: data.purpose,
-        cost: data.cost
-      })
-    });
-  };
-
   // 지출 내역 DELETE
   const handleDelete = (id)=>{
     if(window.confirm("삭제를 원하시면 확인 버튼을 눌러주세요.")){
-      axios.delete(`http://127.0.0.1:8000/api/v1/spending/${id}`)
+      axios.delete(`http://127.0.0.1:8000/api/v1/income/${id}`)
       .then(response => {
           console.log(response);
       })
@@ -118,38 +86,28 @@ const Spending = () => {
 
 // 지출 내역 UPDATE
   const handleEdit= (id) => {
-    axios.put(`http://127.0.0.1:8000/api/v1/spending/${id}`,{
-      user : user_id, //로그인한 user_id 보내줘야함. 세션에서 user_id를 꺼내와야함
-      //로컬 스토리지에 user_id를 저장해서, user_id를 비교해서 
+    axios.put(`http://127.0.0.1:8000/api/v1/income/${id}`,{
+      user : user_id,
       when: data.when,
       memo: data.memo,
-      purpose: data.purpose,
       cost: data.cost
     })
       .then(res => {
         memoRef.current.value = "";
         costRef.current.value = "";
         whenRef.current.value = "";
-        purposeRef.current.value = "";
         setlist([...list, ...res.data])
       }) 
       .catch(function (error) {
         console.log(error);
       });
-    }
-
+  }
 
   // DataGrid 열 (날짜, 용도, 메모, 금액)
   const columns = [
     {
       field: "when",
       headerName: "날짜",
-      flex: 1,
-      editable: true,
-    },
-    {
-      field: "purpose",
-      headerName: "용도",
       flex: 1,
       editable: true,
     },
@@ -168,34 +126,31 @@ const Spending = () => {
     {
       field : 'action',
       headerName: "수정/삭제",
-      flex: 1, 
+      flex: 1,
         renderCell : ({row: {id}}) =>{
           return (
             <>
-              <div className="button_postion">
+            <div className="button_postion">
                 <Button className = "ListEdit"
-                  onClick ={() => {
-                    setRow(id); 
-                    handleEditShow(id);
-                    }}> 수정 </Button>
+                  onClick ={() => { setRow(id); handleEditShow(id); }}> 수정 </Button>
                 <Button className='ListDelete'
                   onClick ={() => {
                     handleDelete(id);
                     window.location.reload()
                 }}> 삭제 </Button>
-              </div>
+            </div>
             </>
         )}
     }
 
   ];
   
-  // 지출 내역 GET
+  // 수입 내역 GET
   useEffect(() => {
     const user_id = localStorage.getItem("user_id")
-    axios.get(`http://127.0.0.1:8000/api/v1/spending/spending-list/${user_id}`)
+    axios.get(`http://127.0.0.1:8000/api/v1/income/income-list/${user_id}`)
     .then(res => {
-      setlist(res.data.spending_list);
+      setlist(res.data.income_list);
     })
   },[])
 
@@ -207,7 +162,7 @@ const Spending = () => {
     </main>
     <div className="size">
     <Box m="20px">
-      <Header title="지출내역" subtitle={(year + '년 '+ month + '월')}/>
+      <Header title="수입 내역" subtitle={(year + '년 '+ month + '월')}/>
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -242,6 +197,8 @@ const Spending = () => {
         {`
           .btn.ListEdit {
             margin :10px;
+            background-color : #6870fa; 
+            border-color : #6870fa;
           }
           .button_postion{
             margin-left :30px;
@@ -279,9 +236,9 @@ const Spending = () => {
             내역 추가
       </Button>
       
-      <Modal show={show} onHide={handleClose}> {/*post*/}
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>지출 내역 추가</Modal.Title>
+          <Modal.Title>수입 내역 추가</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -310,27 +267,11 @@ const Spending = () => {
                 method="post"
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-            <Form.Label>용도</Form.Label>
-              <select class="form-select" 
-              ref={purposeRef}
-              onChange={(e) => handle(e)}
-              id ="purpose"
-              value ={data.purpose}
-              method="post">
-                <option selected>용도를 선택하세요.</option>
-                <option value="식사">식사</option>
-                <option value="술/유흥">술/유흥</option>
-                <option value="뷰티/미용">뷰티/미용</option>
-                <option value="교통/차량">교통/차량</option>
-                <option value="주거/통신">주거/통신</option>
-              </select>
-            </Form.Group>
             <Form.Group className="mb-3" >
             <Form.Label>금액</Form.Label>
               <Form.Control
                 ref={costRef}
-                type="number"
+                type="text"
                 placeholder="금액을 입력하세요."
                 autoFocus
                 onChange={(e) => handle(e)}
@@ -339,25 +280,10 @@ const Spending = () => {
                 method="post"
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-            <Form.Label>영수증 OCR</Form.Label>
-              <Form.Control
-                type="file"
-                autoFocus
-                accept="image/*" 
-                onChange={handleInputChange} 
-                method="post"
-              />
-               <Button variant="primary center"
-                onClick={() => {
-                handleShow();
-                upload();
-               }}> 업로드 </Button> <br/>
-               <Form.Label className="m">❗영수증 이미지를 업로드 하면, 자동으로 가계부를 작성해드립니다❗</Form.Label>
-            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
+          
           <Button variant="secondary center" onClick={handleClose}>
             닫기
           </Button>
@@ -368,9 +294,10 @@ const Spending = () => {
             window.location.reload()
             }}> 확인 </Button>
         </Modal.Footer>
+
       </Modal>
 
-      <Modal show={editShow} onHide={handleClose}>
+     <Modal show={editShow} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>지출 내역 수정</Modal.Title>
         </Modal.Header>
@@ -401,22 +328,6 @@ const Spending = () => {
                 method="put"
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-            <Form.Label>용도</Form.Label>
-              <select class="form-select" 
-              ref={purposeRef}
-              onChange={(e) => handle(e)}
-              id ="purpose"
-              value ={data.purpose}
-              method="put">
-                <option selected>용도를 선택하세요.</option>
-                <option value="식사">식사</option>
-                <option value="술/유흥">술/유흥</option>
-                <option value="뷰티/미용">뷰티/미용</option>
-                <option value="교통/차량">교통/차량</option>
-                <option value="주거/통신">주거/통신</option>
-              </select>
-            </Form.Group>
             <Form.Group className="mb-3" >
             <Form.Label>금액</Form.Label>
               <Form.Control
@@ -430,22 +341,6 @@ const Spending = () => {
                 method="put"
               />
             </Form.Group>
-            <Form.Group className="mb-3">
-            <Form.Label>영수증 OCR</Form.Label>
-              <Form.Control
-                type="file"
-                autoFocus
-                accept="image/*" 
-                onChange={handleInputChange} 
-                method="put"
-              />
-               <Button variant="primary center"
-                onClick={() => {
-                handleShow();
-                upload();
-               }}> 업로드 </Button> <br/>
-               <Form.Label className="m">❗영수증 이미지를 업로드 하면, 자동으로 가계부를 작성해드립니다❗</Form.Label>
-            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -455,7 +350,6 @@ const Spending = () => {
           
           <Button type="submit" variant="primary second"
            onClick={()=> {
-            console.log(Object.values(row));
             handleEditClose();
             handleEdit(row);         
             window.location.reload()
@@ -469,10 +363,6 @@ const Spending = () => {
         checkboxSelection rows={list}
         columns={columns}
         getRowId={list => list.id} />
-        {/* onChange={(e) => {setlist(e.target.list)}}
-        {list.map(spending => (
-          <SpendingItem spending={spending}/>
-        ))} */}
       </Box>
     </Box>
     </div>
@@ -480,10 +370,4 @@ const Spending = () => {
   );
 };
 
-export default Spending;
-// function SpendingItem({spending}) {
-//     return ( <div>
-//       <span>{spending.id}</span>
-//       <button type='button' onClick={() => alert(`Spending id clicked: ${spending.id}`)}>CLICK</button>
-//     </div>)
-//   }
+export default Income;
