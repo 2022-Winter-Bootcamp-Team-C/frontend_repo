@@ -50,13 +50,9 @@
 .budget{
     width: 32%;
     height: 30%;
-    background-color: #ffffff;
     font-size: 23px;
     text-align: center;
     padding-top: 30px;
     margin-left: 34%;
     margin-top : 10%;
-    border-radius: 10px;
-    border-style : 10px solid ;
-    border-color: #EBEBEB;
 }
