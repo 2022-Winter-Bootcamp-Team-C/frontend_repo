@@ -20,7 +20,7 @@ const Bar = () => {
     <div className="size">
     <Box m="20px">
       <Header title="용도별 지출 그래프" subtitle={(year + '년 '+ month + '월')} />
-      <Box height="70vh" width="76vw" margin="20px">
+      <Box height="70vh" width="76vw" margin="20px" sx={{ml:5}}>
         <BarChart />
       </Box>
     </Box>

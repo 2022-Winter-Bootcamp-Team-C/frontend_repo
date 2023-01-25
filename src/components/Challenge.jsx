@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect} from "react";
-import { Box } from "@mui/material";
-import Header from "../../components/Header";
-import Button from 'react-bootstrap/Button';
-import Sidebar from '../global/Sidebar';
-import Topbar from '../global/Topbar';
+import Header from "./Header";
+import Sidebar from '../pages/global/Sidebar';
+import Topbar from '../pages/global/Topbar';
+import axios from "axios";
 
-import Ch from "../../assets/images/sm.svg"
+import Ch from "../assets/images/sm.svg"
+import Button from 'react-bootstrap/Button';
+import { Box } from "@mui/material";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
-import axios from "axios";
-import './index.css'
+import './css/Challenge.css'
 
 const Challenge = () => {
 
@@ -47,7 +47,7 @@ const Challenge = () => {
   }
 
    
-  // 지출 내역 GET
+  // 지출 챌린지 내역 GET
   useEffect(() => {
     const user_id = localStorage.getItem("user_id")
     axios.get(`http://127.0.0.1:8000/api/v1/spending_challenge/${user_id}`)
@@ -57,16 +57,18 @@ const Challenge = () => {
       console.log({list})
     })
   },[])
+  
+
 
   return (
     <div className="app">
-    <Sidebar isSidebar={isSidebar} />
+      <Sidebar isSidebar={isSidebar} />
     <main className="content">
-        <Topbar setIsSidebar={setIsSidebar} />
+      <Topbar setIsSidebar={setIsSidebar} />
     </main>
     <div className="size">
     <Box m="20px">
-      <Header title="챌린지" subtitle="test" />
+      <Header title="챌린지" subtitle="함께 모아봐요!" />
         <img className = "sub-one" src={Ch} alt="challenge"></img>
       <Box height="50vh">
       <h1 className="sub-two"> MY OWN CHALLENGE </h1>
@@ -95,14 +97,15 @@ const Challenge = () => {
             method="post"
             startAdornment={<InputAdornment position="start">₩</InputAdornment>}
             label="Amount"
+            placeholder="금액을 설정해주세요."
           />
         </FormControl>
       </Box>
         <Button type="submit" className="input-button" 
         onClick={() => { totalsubmit(); window.location.reload(); }}> 확인 </Button>
         <div className="budget">
-            <span>목표금액 : {budget}</span>
-            <p >지출금액 : {list}</p>
+            <span>목표금액 : ₩{budget}</span>
+            <p >지출금액 : ₩{list}</p>
         </div>
       </Box>
     </Box>

@@ -28,6 +28,7 @@ const Login = () => {
       console.log(response.data)
       localStorage.clear()
       localStorage.setItem('user_id', response.data.user_id)
+      localStorage.setItem('email', response.data.email)
             setTimeout(()=> {
               navigate("/dashboard");
             }, 1000);
