@@ -5,7 +5,7 @@ import Spending from "./pages/spending"
 import Bar from "./pages/bar";
 import Line from "./pages/line";
 import Pie from "./pages/pie";
-import Challenge from "./pages/challenge"
+import Challenge from "./pages/challenge/challenge"
 import Index from './pages/intro'
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";

@@ -18,7 +18,7 @@ function Signup(){
       email: email,
       password: password,
     })
-    .then((response)=> {
+    .then(()=> {
       console.log("회원가입 성공!");
       alert("회원가입을 환영합니다!");
       setTimeout(()=> {
@@ -38,13 +38,13 @@ return(
 
       <Form.Group className="mb-3" controlId="formBasicEmail" >
         <Form.Label>이메일</Form.Label>
-        <Form.Control type="email" placeholder="이메일" onChange={(e)=>{setEmail(e.target.value);}}/> {/*onChange={(e)=>{setEmail(e.target.value);}}*/}
+        <Form.Control type="email" placeholder="이메일" onChange={(e)=>{setEmail(e.target.value);}}/> 
         <Form.Text className="text-muted" ></Form.Text>
       </Form.Group>
       
       <Form.Group className="mb-4" controlId="formBasicPassword">
         <Form.Label>비밀번호</Form.Label>
-        <Form.Control type="password" placeholder="비밀번호" onChange={(e)=>{setPassword(e.target.value);}}/>{/*onChange={(e)=>{setPassword(e.target.value);}}*/}
+        <Form.Control type="password" placeholder="비밀번호" onChange={(e)=>{setPassword(e.target.value);}}/>
         <Form.Text className="text-muted"></Form.Text>
       </Form.Group>
 

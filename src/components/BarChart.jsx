@@ -34,7 +34,7 @@ const options = {
     },
     scales: {
       y: { // [y 축 관련 설정] 
-        // min: 0, // [y 축 데이터 설정 0 ~ 30 까지 제한]
+        // min: 0,
         // max: 30,
         grid: { // [y 축 데이터 시트 배경 선색 표시]
           drawBorder: false,
@@ -44,16 +44,16 @@ const options = {
         },
         
         ticks: {
-          color: '#D3D3D3',// [y 축 폰트 색상 설정]
-          font: { // [y축 폰트 스타일 변경]
+          color: '#D3D3D3',
+          font: {
             color : '#D3D3D3'
           } 
         }
       },
       x: { // [x 축 관련 설정] 
         ticks: {
-          color: '#808080', // [x 축 폰트 색상 설정]
-          font: { // [x축 폰트 스타일 변경]
+          color: '#808080',
+          font: { 
             color : '#D3D3D3'
           } 
         },
@@ -123,7 +123,7 @@ const BarChart =() => {
     },[])
    
     return(
-        <div style={{width:'83%', height:'70%', margin: '20px'}}>
+        <div style={{width:'85%', height:'70%', margin: '20px'}}>
             <Bar data={data} options={options}/>
          </div>)
 }

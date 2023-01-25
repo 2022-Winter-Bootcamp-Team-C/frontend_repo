@@ -1,9 +1,11 @@
 import React, {useState,useEffect} from 'react';
 import axios from 'axios';
-import { Box, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
+import { Box, Typography, useTheme } from "@mui/material";
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MoneyOffIcon from '@mui/icons-material/MoneyOff';
+import "../../components/Login"
+
 import Header from "../../components/Header";
 import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
@@ -22,6 +24,7 @@ const Dashboard = () => {
   const [threespenddata,setThreeSpendTotalData] = useState([]);
   const [threeincomedata,setThreeIncomeTotalData] = useState([]);
   const user_id = localStorage.getItem("user_id")
+  const email = localStorage.getItem("email")
 
   useEffect(() => {
     const spend = ()=> {
@@ -72,16 +75,17 @@ const Dashboard = () => {
  
     <div className="size">
     <Box m="20px">
-      {/* HEADER */}
+      {/* 헤더 */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Header title="DASHBOARD" subtitle="환영합니다." />
+        <Header title="DASHBOARD" subtitle={email + "님, 환영합니다."} />
       </Box>
 
-      {/* GRID & CHARTS */}
+      {/* 그리드 & 차트 */}
       <Box
+        mt ="27px"
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
-        gridAutoRows="140px"
+        gridAutoRows="145px"
         gap="20px">
         {/* ROW 1 */}
         <Box
@@ -155,7 +159,6 @@ const Dashboard = () => {
           />
         </Box>
 
-        {/* ROW 2 */}
         <Box
           gridColumn="span 8"
           gridRow="span 2"
@@ -168,12 +171,11 @@ const Dashboard = () => {
             alignItems="center">
 
           </Box>
-          <Box height="280px" m="-37px 0 0 70px">
+          <Box height="300px" m="-46px 0 0 50px">
             <BarChart isDashboard={true} />
           </Box>
         </Box>
 
-        {/* ROW 3 */}
         <Box
           gridColumn="span 4"
           gridRow="span 2"
@@ -192,11 +194,11 @@ const Dashboard = () => {
             <Typography
               variant="h5"
               color={colors.greenAccent[500]}
-              sx={{ mt: "15px" }}>
+              sx={{ mt: "18px" }}>
               전달보다 <b>{totaldata.comparison_total_spending}</b>원 덜 소비 하셨어요!
             </Typography>
             
-            <Typography>소비를 덜 하고싶다면 챌린지 참여해보세요 </Typography>
+            <Typography>소비를 덜 하고싶다면 챌린지에 참여해보세요 </Typography>
           </Box>
         </Box>
       </Box>
