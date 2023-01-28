@@ -7,14 +7,19 @@ import {
     BarElement,
     Title,
     PointElement,
+    LineController,
     Tooltip,
     Legend,
+    registerables
   } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
+
+ChartJS.register(...registerables);
 ChartJS.register(
     CategoryScale,
     LinearScale,
+    LineController,
     LineElement,
     PointElement,
     BarElement,
