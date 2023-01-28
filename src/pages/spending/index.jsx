@@ -173,6 +173,7 @@ const Spending = () => {
   ];
 
   return (
+    
     <div className="app" >
           <Sidebar isSidebar={isSidebar} />
     <main className="content">
@@ -289,7 +290,7 @@ const Spending = () => {
             </Form.Group>
             <Form.Group className="mb-3">
             <Form.Label>용도</Form.Label>
-              <select class="form-select" 
+              <select class="form-select"
               ref={purposeRef}
               onChange={(e) => handle(e)}
               id ="purpose"
@@ -297,6 +298,7 @@ const Spending = () => {
               method="put">
                 <option selected>용도를 선택하세요.</option>
                 <option value="식사">식사</option>
+                <option value="쇼핑">쇼핑/여가</option>
                 <option value="술/유흥">술/유흥</option>
                 <option value="뷰티/미용">뷰티/미용</option>
                 <option value="교통/차량">교통/차량</option>
@@ -314,6 +316,7 @@ const Spending = () => {
                 id ="cost"
                 value ={data.cost}
                 method="put"
+                min="0"
               />
             </Form.Group>
             <Form.Group className="mb-3">
