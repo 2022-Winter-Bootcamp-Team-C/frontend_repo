@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef,React } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import axios from "axios";
@@ -91,12 +91,14 @@ const SpendingAddModal = () => {
         axios.get(`http://127.0.0.1:8000/api/v1/spending/spending-list/${user_id}`)
         .then(res => {
           setlist(res.data.spending_list);
+          
       })
     },[])
     
   
   return (
     <>
+    
     <Button variant="primary main" onClick={handleShow}>
             내역 추가
     </Button>
@@ -134,7 +136,7 @@ const SpendingAddModal = () => {
             </Form.Group>
             <Form.Group className="mb-3">
             <Form.Label>용도</Form.Label>
-              <select class="form-select" 
+              <select class="form-select"
               ref={purposeRef}
               onChange={(e) => handle(e)}
               id ="purpose"
@@ -142,6 +144,7 @@ const SpendingAddModal = () => {
               method="post">
                 <option selected>용도를 선택하세요.</option>
                 <option value="식사">식사</option>
+                <option value="쇼핑/여가">쇼핑/여가</option>
                 <option value="술/유흥">술/유흥</option>
                 <option value="뷰티/미용">뷰티/미용</option>
                 <option value="교통/차량">교통/차량</option>
@@ -159,6 +162,7 @@ const SpendingAddModal = () => {
                 id ="cost"
                 value ={data.cost}
                 method="post"
+                min="1"
               />
             </Form.Group>
             <Form.Group className="mb-3">

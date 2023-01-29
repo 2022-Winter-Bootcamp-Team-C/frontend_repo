@@ -72,7 +72,7 @@ const BarChart =() => {
   const colors = tokens(theme.palette.mode);
     const [data, setData] = useState({  
 
-        labels:['식사','술/유흥', '뷰티/미용', '교통/차량', '주거/통신'],
+        labels:['식사','술/유흥', '뷰티/미용', '교통/차량', '주거/통신','쇼핑/여가'],
         datasets: [
           {
             label: 'Dataset 1',
@@ -92,8 +92,9 @@ const BarChart =() => {
                     dataSet1.push(res.data.beauty_rate )
                     dataSet1.push(res.data.transportation_rate )
                     dataSet1.push(res.data.mobile_rate )
+                    dataSet1.push(res.data.shopping_rate )
             setData({
-                labels:['식사','술/유흥', '뷰티/미용', '교통/차량', '주거/통신'],
+                labels:['식사','술/유흥', '뷰티/미용', '교통/차량', '주거/통신','쇼핑/여가'],
                 datasets: [
                   {
                     label : "비율",
