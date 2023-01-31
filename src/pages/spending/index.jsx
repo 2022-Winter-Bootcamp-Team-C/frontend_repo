@@ -71,7 +71,7 @@ const Spending = () => {
       console.log("성공! ", JSON.stringify(data));
       setData({
         user : user_id,
-        when: data.date,
+        when: data.when,
         memo: data.memo,
         purpose: data.purpose,
         cost: data.cost
@@ -112,6 +112,7 @@ const Spending = () => {
         console.log(error);
       });
     }
+    
    // 지출 내역 GET
     useEffect(() => {
       const user_id = localStorage.getItem("user_id")
@@ -120,7 +121,6 @@ const Spending = () => {
         setlist(res.data.spending_list);
     })
   },[])
-
 
   // DataGrid Columns (날짜, 용도, 메모, 금액)
   const columns = [
@@ -157,9 +157,12 @@ const Spending = () => {
             <>
               <div className="button_postion">
                 <Button className = "ListEdit" 
-                  onClick ={() => {
-                    setRow(id); 
+                  onClick ={(e) => {
+                    setRow(id);
+                    const result = list.filter(item => item.id == id);
+                    delete result[0].id;
                     handleEditShow(id);
+                    setData(result[0]);
                     }}> 수정 </Button>
                 <Button className='ListDelete'
                   onClick ={() => {
@@ -264,7 +267,7 @@ const Spending = () => {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3" >
-              <Form.Label>날짜</Form.Label >
+              <Form.Label></Form.Label >
               <Form.Control
                 ref={whenRef}
                 type="date"
