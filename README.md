@@ -4,6 +4,7 @@
 
 **SMTM**과 함께 **절약**을 해보러 가볼까요?<br/>
 : 네이버 OCR 를 활용해 영수증 사진을 넣으면 결제 정보를 자동으로 읽어 가계부를 작성해주는 웹 서비스
+**www.smtm.kr -> 현재 서버 중단**
 
 ![SHOW me the MONEY (1)](https://user-images.githubusercontent.com/101851472/214908541-19eabb50-e10d-42e5-8bfa-e1a69bc887cf.png)
  <br>
